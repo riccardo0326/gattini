@@ -6,6 +6,7 @@ const messageRoutes = require('./routes/message');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'https://gattini-innamorati.netlify.app';
+const ALLOW_ANY_ORIGIN = process.env.ALLOW_ANY_ORIGIN === 'true';
 
 const allowedOrigins = [
   FRONTEND_ORIGIN,
@@ -17,9 +18,11 @@ const allowedOrigins = [
 function applyCors(req, res) {
   const origin = req.headers.origin;
   if (!origin) return;
-  const allowed = allowedOrigins.some((o) =>
-    typeof o === 'string' ? o === origin : o.test(origin)
-  );
+  const allowed =
+    ALLOW_ANY_ORIGIN ||
+    allowedOrigins.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
   if (allowed) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Vary', 'Origin');
@@ -32,7 +35,10 @@ app.use(express.json());
 app.use((req, res, next) => {
   applyCors(req, res);
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header(
+    'Access-Control-Allow-Headers',
+    req.headers['access-control-request-headers'] || 'Content-Type, Authorization'
+  );
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
   }
