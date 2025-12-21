@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { sendPush, VAPID_PUBLIC_KEY } = require('../push');
+const store = require('../store');
 
 const VALID_ROLES = new Set(['A', 'B']);
-const subscriptions = new Map(); // owner -> subscription
-const messages = []; // { sender, receiver, message, timestamp, seen }
+store.load();
 
 function validateRole(value) {
   return VALID_ROLES.has(value);
@@ -16,7 +16,7 @@ router.post('/subscribe', (req, res) => {
   if (!validateRole(owner) || !subscription) {
     return res.status(400).json({ ok: false, error: 'owner (A|B) and subscription required' });
   }
-  subscriptions.set(owner, subscription);
+  store.setSubscription(owner, subscription);
   res.json({ ok: true, owner });
 });
 
@@ -28,9 +28,9 @@ router.post('/send-message', async (req, res) => {
   }
 
   const record = { sender, receiver, message, timestamp, seen: Boolean(seen) };
-  messages.push(record);
+  store.addMessage(record);
 
-  const targetSub = subscriptions.get(receiver);
+  const targetSub = store.getSubscription(receiver);
   let delivered = false;
   if (targetSub) {
     try {
@@ -55,8 +55,7 @@ router.get('/pending', (req, res) => {
     return res.status(400).json({ ok: false, error: 'owner (A|B) required' });
   }
 
-  const pending = messages.filter((m) => m.receiver === owner && !m.seen);
-  pending.forEach((m) => { m.seen = true; });
+  const pending = store.getPending(owner);
   res.json(pending);
 });
 

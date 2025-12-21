@@ -1,4 +1,4 @@
-/* Basic PWA service worker; extend caching later. */
+/* PWA service worker */
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -7,8 +7,6 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
-
-// TODO add cache logic for offline play
 
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
@@ -28,7 +26,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data.url || '/';
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {

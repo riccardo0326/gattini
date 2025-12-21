@@ -62,7 +62,6 @@ async function handleSend() {
     seen: false
   };
 
-  // Stub: ready for push/WebSocket integration later.
   await sendMessage(message);
   console.log("Message composed:", message);
 

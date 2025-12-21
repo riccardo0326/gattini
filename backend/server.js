@@ -7,6 +7,7 @@ const messageRoutes = require('./routes/message');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+const DATA_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
 
 app.use(express.json());
 
