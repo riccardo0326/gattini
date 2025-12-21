@@ -67,6 +67,14 @@ const LOVE_MESSAGES = [
 const MOOD_MESSAGE =
   "Se hai aperto l’app forse ti senti un po’ giù o ti manco. Avvicinati che parliamo 💖";
 
+const notificationAudio = new Audio("/assets/audio/notification.mp3");
+notificationAudio.preload = "auto";
+notificationAudio.volume = 0.7;
+const backgroundMusic = new Audio("/assets/audio/background_music.mp3");
+backgroundMusic.loop = true;
+backgroundMusic.preload = "auto";
+backgroundMusic.volume = 0.35;
+
 const talkButton = document.getElementById("talk-button");
 const leftBtn = document.getElementById("move-left");
 const rightBtn = document.getElementById("move-right");
@@ -89,6 +97,8 @@ startGame({
 
 if (talkButton) {
   talkButton.addEventListener("click", () => {
+    notificationAudio.currentTime = 0;
+    notificationAudio.play().catch(() => {});
     const message = LOVE_MESSAGES[Math.floor(Math.random() * LOVE_MESSAGES.length)];
     showDialogue(message);
   });
@@ -103,6 +113,8 @@ window.addEventListener("keydown", (e) => {
     closeDialogue();
   }
 });
+
+startBackgroundMusic();
 
 if (leftBtn) {
   leftBtn.addEventListener("touchstart", () => setMoveDirection("left"));
@@ -141,4 +153,20 @@ function typeText(targetEl, text, { speed = 30, delay = 300 } = {}) {
       }
     }, speed);
   }, delay);
+}
+
+function startBackgroundMusic() {
+  const tryPlay = () => backgroundMusic.play().catch(() => {});
+  tryPlay();
+
+  const unlock = () => {
+    tryPlay();
+    document.removeEventListener("click", unlock);
+    document.removeEventListener("touchstart", unlock);
+    document.removeEventListener("keydown", unlock);
+  };
+
+  document.addEventListener("click", unlock, { once: true });
+  document.addEventListener("touchstart", unlock, { once: true });
+  document.addEventListener("keydown", unlock, { once: true });
 }

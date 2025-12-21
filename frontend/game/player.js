@@ -4,6 +4,12 @@ const FRAMES_PER_ROW = 8; // 320px wide sheet / 32px frames
 const MOVE_SPEED = 1.5;
 const COLLISION_PADDING = 0.2; // % of sprite size trimmed for collision box
 let lastCollision = false;
+const footstepsAudio = new Audio("/assets/audio/footsteps.mp3");
+footstepsAudio.loop = true;
+footstepsAudio.preload = "auto";
+footstepsAudio.volume = 0.5;
+let footstepsPlaying = false;
+let footstepsUnlocked = false;
 
 const ANIMATIONS = {
   idle: { row: 17, frames: FRAMES_PER_ROW, speed: 15 },
@@ -63,12 +69,20 @@ export function updateCharacters({ worldWidth, paused = false }) {
       advanceAnimation(actor, false);
     });
     resolveOverlap(player, remoteCat, worldWidth);
+    stopFootsteps();
     return;
   }
 
   updatePlayerControlled(player, worldWidth);
   updateIdle(remoteCat);
   resolveOverlap(player, remoteCat, worldWidth);
+
+  const walking = Math.abs(player.vx) > 0.1;
+  if (walking) {
+    playFootsteps();
+  } else {
+    stopFootsteps();
+  }
 }
 
 export function drawCharacters(ctx, cameraX = 0) {
@@ -84,6 +98,7 @@ export function nudgeApart(worldWidth) {
 }
 
 export function setMoveDirection(dir) {
+  unlockFootsteps();
   if (dir === 'left') {
     keys['ArrowLeft'] = true;
     keys['ArrowRight'] = false;
@@ -219,5 +234,31 @@ function advanceAnimation(actor, walking) {
 
 // keyboard input
 const keys = {};
-window.addEventListener("keydown", (e) => keys[e.key] = true);
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+  unlockFootsteps();
+});
 window.addEventListener("keyup", (e) => keys[e.key] = false);
+
+function playFootsteps() {
+  if (footstepsPlaying) return;
+  footstepsAudio.currentTime = 0;
+  footstepsAudio.play().then(() => {
+    footstepsPlaying = true;
+  }).catch(() => {});
+}
+
+function stopFootsteps() {
+  if (!footstepsPlaying) return;
+  footstepsAudio.pause();
+  footstepsPlaying = false;
+}
+
+function unlockFootsteps() {
+  if (footstepsUnlocked) return;
+  footstepsAudio.play().then(() => {
+    footstepsAudio.pause();
+    footstepsAudio.currentTime = 0;
+    footstepsUnlocked = true;
+  }).catch(() => {});
+}

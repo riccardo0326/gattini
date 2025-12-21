@@ -21,6 +21,7 @@ const backgroundReady = backgroundImage.decode
       backgroundImage.onerror = () => resolve();
     });
 
+
 let canvas, ctx;
 let backgroundBuffer, backgroundCtx;
 let cameraX = 0;
@@ -31,6 +32,7 @@ const BACKGROUND_PIXEL_SCALE = 0.25; // lower-res buffer for a pixel-art feel
 let isPaused = false;
 let proximityHandler = null;
 const PROXIMITY_DISTANCE = SPRITE_SIZE * 0.9;
+let lastFrameTime = 0;
 
 export async function startGame({ onProximity } = {}) {
   initCharacters();
@@ -48,6 +50,7 @@ export async function startGame({ onProximity } = {}) {
   positionCharacters();
 
   await Promise.all([spritesReady, backgroundReady]);
+
 
   initDialogue({
     onOpen: () => { isPaused = true; },
@@ -102,10 +105,15 @@ function positionCharacters() {
 }
 
 function loop() {
+  const now = performance.now();
+  const dt = lastFrameTime ? Math.min((now - lastFrameTime) / 1000, 0.05) : 0;
+  lastFrameTime = now;
+
   updateCharacters({ worldWidth, paused: isPaused });
   if (proximityHandler) {
     proximityHandler(isNear());
   }
+
   updateCamera();
   drawBackground();
   drawCharacters(ctx, cameraX);
@@ -125,6 +133,11 @@ function drawBackground() {
   backgroundCtx.fillStyle = "#0b1021";
   backgroundCtx.fillRect(0, 0, bw, bh);
 
+  const scaleX = bw / viewport.width;
+  const scaleY = bh / viewport.height;
+
+
+
   if (backgroundImage.complete && backgroundImage.naturalWidth > 0) {
     const scale = Math.max(bw / backgroundImage.width, bh / backgroundImage.height);
     const targetW = backgroundImage.width * scale;
@@ -133,6 +146,7 @@ function drawBackground() {
     const dy = (bh - targetH) / 2;
     backgroundCtx.drawImage(backgroundImage, dx, dy, targetW, targetH);
   }
+
 
   ctx.save();
   ctx.imageSmoothingEnabled = false;
