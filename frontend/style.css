@@ -62,7 +62,7 @@ canvas {
 .dialogue-modal {
   position: relative;
   display: grid;
-  grid-template-columns: 96px 1fr 96px;
+  grid-template-columns: 1fr 120px;
   gap: 12px;
   align-items: center;
   background: #0f172a;
@@ -70,11 +70,12 @@ canvas {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
   padding: 12px;
   width: min(520px, 100%);
+  min-height: 180px;
 }
 
 .dialogue-avatar {
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border: 2px solid #1f2937;
   background-size: 640px 5888px; /* 2x scale of sprite sheet */
   background-repeat: no-repeat;
@@ -87,11 +88,6 @@ canvas {
 }
 
 .dialogue-avatar--local {
-  background-image: url("/assets/sprites/cats/cat_virginia.png");
-  background-position: -256px -896px; /* row 14, frame 4 scaled 2x */
-}
-
-.dialogue-avatar--remote {
   background-image: url("/assets/sprites/cats/cat_riccardo.png");
   background-position: -256px -896px; /* row 14, frame 4 scaled 2x */
 }
@@ -100,8 +96,8 @@ canvas {
   position: relative;
   background: #16213e;
   border: 2px solid #1f2937;
-  padding: 14px 12px 12px;
-  min-height: 64px;
+  padding: 16px 14px 14px;
+  min-height: 96px;
   color: #e2e8f0;
   font-family: "Courier New", monospace;
   letter-spacing: 0.2px;
@@ -114,15 +110,15 @@ canvas {
 
 .dialogue-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   background: #ef4444;
   color: #0b1021;
   border: 2px solid #1f2937;
   padding: 4px 8px;
   cursor: pointer;
   font-family: inherit;
-}
+} 
 
 @media (max-width: 540px) {
   .dialogue-modal {
@@ -137,8 +133,7 @@ canvas {
 .touch-controls {
   position: fixed;
   inset: auto 12px 18px 12px;
-  display: grid;
-  grid-template-columns: 80px 1fr 80px;
+  display: flex;
   gap: 10px;
   align-items: center;
   z-index: 5;
@@ -157,6 +152,10 @@ canvas {
 
 #talk-button {
   text-align: center;
+}
+
+.touch-controls .spacer {
+  min-height: 0;
 }
 
 .hidden {

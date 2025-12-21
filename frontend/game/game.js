@@ -30,6 +30,7 @@ let hasPlacedPlayer = false;
 const BACKGROUND_PIXEL_SCALE = 0.25; // lower-res buffer for a pixel-art feel
 let isPaused = false;
 let proximityHandler = null;
+const PROXIMITY_DISTANCE = SPRITE_SIZE * 0.9;
 
 export async function startGame({ onProximity } = {}) {
   initCharacters();
@@ -103,7 +104,7 @@ function positionCharacters() {
 function loop() {
   updateCharacters({ worldWidth, paused: isPaused });
   if (proximityHandler) {
-    proximityHandler(areCatsColliding());
+    proximityHandler(isNear());
   }
   updateCamera();
   drawBackground();
@@ -152,4 +153,11 @@ function handleInteractionKey(e) {
 
 function releaseCollision() {
   nudgeApart(worldWidth);
+}
+
+function isNear() {
+  const playerCenter = player.x + SPRITE_SIZE / 2;
+  const remoteCenter = characters[1].x + SPRITE_SIZE / 2;
+  const dist = Math.abs(playerCenter - remoteCenter);
+  return dist < PROXIMITY_DISTANCE;
 }

@@ -207,7 +207,7 @@ function drawExclamation(ctx, actor, cameraX) {
   const bob = Math.sin(t) * 2;
   const dw = FRAME_SIZE * SCALE;
   const dx = Math.round(actor.x - cameraX + dw / 2);
-  const dy = Math.round(actor.y - 20 + bob);
+  const dy = Math.round(actor.y - 6 + bob);
 
   ctx.save();
   ctx.fillStyle = "#f9ed69";

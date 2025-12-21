@@ -1,6 +1,7 @@
 let overlayEl;
 let textEl;
 let closeBtn;
+let avatar;
 let isOpen = false;
 let callbacks = { onOpen: null, onClose: null };
 
@@ -11,6 +12,7 @@ export function initDialogue({ onOpen, onClose } = {}) {
   overlayEl = document.getElementById("dialogue-overlay");
   textEl = document.getElementById("dialogue-text");
   closeBtn = document.getElementById("dialogue-close");
+  avatar = document.querySelector(".dialogue-avatar--local");
 
   closeBtn?.addEventListener("click", closeDialogue);
   overlayEl?.addEventListener("click", (e) => {
