@@ -61,17 +61,6 @@ const LOVE_MESSAGES = [
   "Stai facendo meglio di quanto credi. Miao.",
   "Il progresso è lento, ma con stile 🐈‍⬛✨",
   "Respira. Poi fai una cosa alla volta 😼",
-  "Anche i gatti sbagliano salto. Succede 🐾",
-  "Continua. Il premio arriva (forse croccantini) 🐱",
-  "Sei forte, anche senza artigli fuori 🐾",
-  "Modalità gatto attivata: calma e focus 🐈",
-  "Nessuna fretta. Nessun dramma. Solo te 🐱",
-  "Il mondo può aspettare cinque minuti 🐾",
-  "Sei più pronta di quanto sembri 😼",
-  "Se funziona per il gatto, funzionerà per te 🐱",
-  "Un passo avanti, zero sensi di colpa 🐾",
-  "Stai gestendo tutto. Anche se non sembra 🐈‍⬛",
-  "Fidati: il gatto ti stima molto 😼🤍",
   "Continua così. Io e il gatto siamo fieri 🐱✨"
 ];
 

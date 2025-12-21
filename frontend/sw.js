@@ -1,4 +1,7 @@
-const CACHE_NAME = "gattini-cache-v1";
+const CACHE_PREFIX = "gattini-cache";
+const CACHE_VERSION = "v2";
+const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
+
 const ASSETS = [
   "/",
   "/index.html",
@@ -9,6 +12,7 @@ const ASSETS = [
   "/assets/sprites/cats/cat_virginia.png",
   "/assets/sprites/cats/cat_riccardo.png"
 ];
+const ASSET_SET = new Set(ASSETS);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -19,13 +23,36 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : null)))
+      Promise.all(
+        keys
+          .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      )
     ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
-  );
+  if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  const shouldHandle = event.request.mode === "navigate" || ASSET_SET.has(url.pathname);
+  if (!shouldHandle) return;
+
+  event.respondWith(networkFirst(event.request));
 });
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    throw error;
+  }
+}
