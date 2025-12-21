@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 // TODO static hosting: serve ../frontend build output when ready
 
-app.use('/', messageRoutes);
+app.use('/api', messageRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
