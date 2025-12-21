@@ -4,6 +4,7 @@ let closeBtn;
 let avatar;
 let isOpen = false;
 let callbacks = { onOpen: null, onClose: null };
+const AVATAR_IMAGE = "/assets/backgrounds/cat-kiss.png";
 
 export function initDialogue({ onOpen, onClose } = {}) {
   callbacks.onOpen = onOpen || null;
@@ -23,6 +24,9 @@ export function initDialogue({ onOpen, onClose } = {}) {
 export function showDialogue(message) {
   if (!overlayEl || !textEl) return;
   textEl.textContent = message || "";
+  if (avatar) {
+    avatar.style.backgroundImage = `url(${AVATAR_IMAGE})`;
+  }
   overlayEl.classList.add("is-open");
   overlayEl.setAttribute("aria-hidden", "false");
   isOpen = true;

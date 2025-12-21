@@ -42,6 +42,42 @@ canvas {
   z-index: 1;
 }
 
+.mood-banner {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  border: 3px solid #1f2937;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+  padding: 10px 14px;
+  min-width: 260px;
+  max-width: min(640px, calc(100vw - 32px));
+  color: #e2e8f0;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.3px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.mood-banner-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.mood-banner-text.is-typing::after {
+  content: "▌";
+  display: inline-block;
+  margin-left: 2px;
+  animation: mood-blink 1s steps(1) infinite;
+}
+
+@keyframes mood-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 /* Dialogue overlay */
 .dialogue-overlay {
   position: fixed;
@@ -62,7 +98,7 @@ canvas {
 .dialogue-modal {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: auto 1fr;
   gap: 12px;
   align-items: center;
   background: #0f172a;
@@ -74,12 +110,17 @@ canvas {
 }
 
 .dialogue-avatar {
-  width: 96px;
-  height: 96px;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
+  width: clamp(110px, 26vw, 170px);
+  aspect-ratio: 1 / 1;
   border: 2px solid #1f2937;
-  background-size: 640px 5888px; /* 2x scale of sprite sheet */
   background-repeat: no-repeat;
-  image-rendering: pixelated;
+  background-size: contain;
+  background-position: center;
+  background-color: #0b1021;
   transition: transform 0.1s linear;
 }
 
@@ -88,11 +129,12 @@ canvas {
 }
 
 .dialogue-avatar--local {
-  background-image: url("/assets/sprites/cats/cat_riccardo.png");
-  background-position: -256px -896px; /* row 14, frame 4 scaled 2x */
+  background-image: url("/assets/backgrounds/cat-kiss.png");
 }
 
 .dialogue-bubble {
+  grid-column: 2;
+  grid-row: 1;
   position: relative;
   background: #16213e;
   border: 2px solid #1f2937;
@@ -122,21 +164,24 @@ canvas {
 
 @media (max-width: 540px) {
   .dialogue-modal {
-    grid-template-columns: 72px 1fr 72px;
-  }
-  .dialogue-avatar {
-    width: 64px;
-    height: 64px;
+    grid-template-columns: auto 1fr;
   }
 }
 
 .touch-controls {
   position: fixed;
-  inset: auto 12px 18px 12px;
-  display: flex;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
   gap: 10px;
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
   align-items: center;
   z-index: 5;
+  pointer-events: none;
 }
 
 .touch-controls button {
@@ -148,10 +193,26 @@ canvas {
   font-size: 1rem;
   box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
 }
 
 #talk-button {
   text-align: center;
+  justify-self: center;
+  font-size: 1.5rem;
+}
+
+.touch-controls #move-left {
+  justify-self: start;
+  width: 150px;  
+}
+
+.touch-controls #move-right {
+  justify-self: end;
+  width: 150px;  
+
 }
 
 .touch-controls .spacer {

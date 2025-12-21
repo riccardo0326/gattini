@@ -12,7 +12,7 @@ const LOVE_MESSAGES = [
   "Non sei sola, io sono qui 🤍",
   "Hai una luce tutta tua ✨",
   "Continua così, stai facendo bene 🌸",
-  "Meriti cose belle. Tutte 🐈‍⬛💫",
+  "Meriti solo cose belle. Tutte 🐈‍⬛💫",
   "Fidati di te come io mi fido di te 🌱",
   "Ogni giorno cresci, anche quando non lo vedi 🌙",
   "Sei capace. Punto 💪🐾",
@@ -64,9 +64,13 @@ const LOVE_MESSAGES = [
   "Continua così. Io e il gatto siamo fieri 🐱✨"
 ];
 
+const MOOD_MESSAGE =
+  "Se hai aperto l’app forse ti senti un po’ giù o ti manco. Avvicinati che parliamo 💖";
+
 const talkButton = document.getElementById("talk-button");
 const leftBtn = document.getElementById("move-left");
 const rightBtn = document.getElementById("move-right");
+const moodBannerText = document.getElementById("mood-banner-text");
 
 initDialogue({
   onOpen: () => document.body.classList.add("overlay-open"),
@@ -88,6 +92,10 @@ if (talkButton) {
     const message = LOVE_MESSAGES[Math.floor(Math.random() * LOVE_MESSAGES.length)];
     showDialogue(message);
   });
+}
+
+if (moodBannerText) {
+  typeText(moodBannerText, MOOD_MESSAGE, { speed: 45, delay: 400 });
 }
 
 window.addEventListener("keydown", (e) => {
@@ -116,4 +124,21 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").catch((err) => {
     console.error("Service worker registration failed", err);
   });
+}
+
+function typeText(targetEl, text, { speed = 30, delay = 300 } = {}) {
+  targetEl.textContent = "";
+  targetEl.classList.add("is-typing");
+
+  let index = 0;
+  setTimeout(() => {
+    const timer = setInterval(() => {
+      targetEl.textContent += text.charAt(index);
+      index += 1;
+      if (index >= text.length) {
+        clearInterval(timer);
+        targetEl.classList.remove("is-typing");
+      }
+    }, speed);
+  }, delay);
 }

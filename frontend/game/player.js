@@ -75,9 +75,6 @@ export function drawCharacters(ctx, cameraX = 0) {
   characters.forEach((actor, idx) => {
     drawCat(ctx, actor, cameraX);
     drawNameTag(ctx, actor, cameraX, idx === 0 ? "Virginia" : "Riccardo");
-    if (idx === 1) {
-      drawExclamation(ctx, actor, cameraX);
-    }
   });
 }
 
@@ -199,30 +196,6 @@ function drawNameTag(ctx, actor, cameraX, label) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(label, dx, dy - 6);
-  ctx.restore();
-}
-
-function drawExclamation(ctx, actor, cameraX) {
-  const t = performance.now() / 200;
-  const bob = Math.sin(t) * 2;
-  const dw = FRAME_SIZE * SCALE;
-  const dx = Math.round(actor.x - cameraX + dw / 2);
-  const dy = Math.round(actor.y - 6 + bob);
-
-  ctx.save();
-  ctx.fillStyle = "#f9ed69";
-  ctx.strokeStyle = "#1f1d2b";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(dx, dy, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = "#1f1d2b";
-  ctx.font = "16px monospace";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("!", dx, dy + 1);
   ctx.restore();
 }
 
