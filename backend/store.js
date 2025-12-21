@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
+const ENABLE_DISK = !process.env.VERCEL; // Vercel filesystem is read-only across invocations
 
 let state = {
   subscriptions: {}, // owner -> subscription
@@ -9,6 +10,7 @@ let state = {
 };
 
 function load() {
+  if (!ENABLE_DISK) return;
   try {
     if (fs.existsSync(DATA_PATH)) {
       const raw = fs.readFileSync(DATA_PATH, 'utf-8');
@@ -20,6 +22,7 @@ function load() {
 }
 
 function save() {
+  if (!ENABLE_DISK) return false;
   try {
     fs.writeFileSync(DATA_PATH, JSON.stringify(state, null, 2), 'utf-8');
     return true;

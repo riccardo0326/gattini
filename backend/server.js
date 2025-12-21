@@ -1,56 +1,48 @@
 const path = require('path');
 require('dotenv').config();
 const express = require('express');
-
-// const messageRoutes = require('./routes/message');
+const messageRoutes = require('./routes/message');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'https://gattini-innamorati.netlify.app';
+
 const allowedOrigins = [
   FRONTEND_ORIGIN,
-  /\.netlify\.app$/,
-  'http://localhost:5173',
-  'http://localhost:4173'
-];
+  /^https?:\/\/.*\.netlify\.app$/,
+  /^http:\/\/localhost:\d+$/,
+  /^http:\/\/127\.0\.0\.1:\d+$/
+].filter(Boolean);
 
-if (
-  origin &&
-  allowedOrigins.some(o =>
-    o instanceof RegExp ? o.test(origin) : o === origin
-  )
-) {
-  res.header('Access-Control-Allow-Origin', origin);
-}
-
-const DATA_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
-
-app.use(express.json());
-
-// Simple CORS allowlist for frontend origin (Netlify or localhost).
-app.use((req, res, next) => {
+function applyCors(req, res) {
   const origin = req.headers.origin;
-  const allowedOrigins = [
-    FRONTEND_ORIGIN,
-    'http://localhost:4173',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:4173'
-  ].filter(Boolean);
-  if (origin && allowedOrigins.includes(origin)) {
+  if (!origin) return;
+  const allowed = allowedOrigins.some((o) =>
+    typeof o === 'string' ? o === origin : o.test(origin)
+  );
+  if (allowed) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Vary', 'Origin');
   }
+}
+
+app.use(express.json());
+
+// CORS and preflight handler
+app.use((req, res, next) => {
+  applyCors(req, res);
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
   next();
 });
 
-// TODO static hosting: serve ../frontend build output when ready
-
-// app.use('/api', messageRoutes);
+app.use('/api', messageRoutes);
 
 app.get('/health', (_req, res) => {
+  applyCors(_req, res);
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
