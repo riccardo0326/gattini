@@ -43,29 +43,24 @@ const LOVE_MESSAGES = [
   "Sei affidabile. E preziosa 🌟",
   "Stai crescendo, si vede 🌸",
   "Io credo in quello che fai 🧭",
-  "Non sei in ritardo 🐾",
-  "La tua strada è tua 🤍",
   "Hai già superato tanto 🐱",
   "Anche quando sei stanca, vali 🌙",
   "Il tuo impegno parla per te 💬✨",
-  "Vai piano, ma vai 🌱",
   "Sei una presenza che conta 💛",
   "Meriti rispetto, anche da te stessa 🐾",
   "Continua a provarci, basta questo 🌟",
   "Ti amo, e credo in te 🐱🤍",
   "Il gattino approva quello che stai facendo 🐱✔️",
-  "Anche oggi: niente panico, solo passo felino 🐾",
   "Sei competente. Il gatto ha controllato 😼",
   "Vai bene così. Fonte: me e il gatto 🐱",
-  "Se dubiti, fai come i gatti: vai lo stesso 🐾",
-  "Stai facendo meglio di quanto credi. Miao.",
-  "Il progresso è lento, ma con stile 🐈‍⬛✨",
   "Respira. Poi fai una cosa alla volta 😼",
-  "Continua così. Io e il gatto siamo fieri 🐱✨"
+  "Continua così. Io e il gatto siamo fieri 🐱✨",
+  "Fare troppo non significa fare meglio. Prenditi il tuo tempo🤍",
+  "Tutto prima o poi si risolve. 🌱"
 ];
 
 const MOOD_MESSAGE =
-  "Se hai aperto l’app forse ti senti un po’ giù o ti manco. Avvicinati che parliamo 💖";
+  "Se mi hai aperto forse significa che ti senti un po’ giù :( Avvicinati che parliamo 💖";
 
 const notificationAudio = new Audio("/assets/audio/notification.mp3");
 notificationAudio.preload = "auto";

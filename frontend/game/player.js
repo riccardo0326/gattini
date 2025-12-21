@@ -1,5 +1,5 @@
 const FRAME_SIZE = 32; // sprite sheet row height is 32px
-const SCALE = 3; // draw scaled-up for crisp pixel art
+const SCALE = 2; // draw scaled-up for crisp pixel art
 const FRAMES_PER_ROW = 8; // 320px wide sheet / 32px frames
 const MOVE_SPEED = 1.5;
 const COLLISION_PADDING = 0.2; // % of sprite size trimmed for collision box
@@ -12,8 +12,8 @@ let footstepsPlaying = false;
 let footstepsUnlocked = false;
 
 const ANIMATIONS = {
-  idle: { row: 17, frames: FRAMES_PER_ROW, speed: 15 },
-  walk: { row: 5, frames: FRAMES_PER_ROW, speed: 7 }
+  idle: { row: 17, frames: FRAMES_PER_ROW, speed: 10 },
+  walk: { row: 5, frames: FRAMES_PER_ROW, speed: 8 }
 };
 
 export const SPRITE_SIZE = FRAME_SIZE * SCALE;
@@ -163,7 +163,7 @@ function drawCat(ctx, actor, cameraX) {
 
   const animData = ANIMATIONS[actor.anim.name];
   const sx = actor.anim.frame * FRAME_SIZE;
-  const sy = animData.row * FRAME_SIZE + 1; // trim top pixel to remove artifact
+  const sy = animData.row * FRAME_SIZE + 6;
   const sh = FRAME_SIZE - 1;
   const dw = FRAME_SIZE * SCALE;
   const dh = sh * SCALE;
@@ -197,12 +197,12 @@ function drawCat(ctx, actor, cameraX) {
 function drawNameTag(ctx, actor, cameraX, label) {
   const dw = FRAME_SIZE * SCALE;
   const dx = Math.round(actor.x - cameraX + dw / 2);
-  const dy = Math.round(actor.y - 12);
+  const dy = Math.round(actor.y + 14);
   ctx.save();
   ctx.fillStyle = "rgba(0,0,0,0.6)";
   ctx.strokeStyle = "#ffffffaa";
   ctx.lineWidth = 1;
-  ctx.font = "12px 'Courier New', monospace";
+  ctx.font = "10px 'Courier New', monospace";
   const textWidth = ctx.measureText(label).width;
   const pad = 6;
   ctx.fillRect(dx - textWidth / 2 - pad, dy - 14, textWidth + pad * 2, 16);

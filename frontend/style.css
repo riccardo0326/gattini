@@ -150,6 +150,13 @@ canvas {
   white-space: pre-wrap;
 }
 
+.dialogue-text.is-typing::after {
+  content: "▌";
+  display: inline-block;
+  margin-left: 2px;
+  animation: mood-blink 1s steps(1) infinite;
+}
+
 .dialogue-close {
   position: absolute;
   top: 10px;
