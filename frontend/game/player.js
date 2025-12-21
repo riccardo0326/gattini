@@ -1,11 +1,8 @@
-import { messageState } from "./dialogue.js";
-import { getLocalSprite, getRemoteSprite } from "./identity.js";
-
 const FRAME_SIZE = 32; // sprite sheet row height is 32px
 const SCALE = 3; // draw scaled-up for crisp pixel art
 const FRAMES_PER_ROW = 8; // 320px wide sheet / 32px frames
 const MOVE_SPEED = 1.5;
-const COLLISION_PADDING = 0.20; // % of sprite size trimmed for collision box
+const COLLISION_PADDING = 0.2; // % of sprite size trimmed for collision box
 let lastCollision = false;
 
 const ANIMATIONS = {
@@ -47,15 +44,16 @@ function createCharacter(sprite) {
 }
 
 export function initCharacters() {
-  const localSprite = loadSprite(getLocalSprite());
-  const remoteSprite = loadSprite(getRemoteSprite());
+  // Virginia is the player, Riccardo is the companion.
+  const virginiaSprite = loadSprite("/assets/sprites/cats/cat_virginia.png");
+  const riccardoSprite = loadSprite("/assets/sprites/cats/cat_riccardo.png");
 
-  player = createCharacter(localSprite);
-  remoteCat = createCharacter(remoteSprite);
+  player = createCharacter(virginiaSprite);
+  remoteCat = createCharacter(riccardoSprite);
   remoteCat.facingLeft = true;
   characters = [player, remoteCat];
 
-  spritesReady = Promise.all([localSprite.ready, remoteSprite.ready]);
+  spritesReady = Promise.all([virginiaSprite.ready, riccardoSprite.ready]);
 }
 
 export function updateCharacters({ worldWidth, paused = false }) {
@@ -76,8 +74,12 @@ export function updateCharacters({ worldWidth, paused = false }) {
 export function drawCharacters(ctx, cameraX = 0) {
   characters.forEach((actor) => {
     drawCat(ctx, actor, cameraX);
-    drawAlertIfNeeded(ctx, actor, cameraX);
   });
+}
+
+export function nudgeApart(worldWidth) {
+  player.x = Math.max(0, player.x - 12);
+  remoteCat.x = Math.min(worldWidth - SPRITE_SIZE, remoteCat.x + 12);
 }
 
 function updatePlayerControlled(actor, worldWidth) {
@@ -111,7 +113,7 @@ function resolveOverlap(a, b, worldWidth) {
   const bRight = b.x + SPRITE_SIZE - pad;
 
   const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
-  lastCollision = overlapX > 0;
+  lastCollision = overlapX > 4; // soften sensitivity
   if (overlapX > 0) {
     if (a.x < b.x) {
       a.x -= overlapX;
@@ -163,31 +165,6 @@ function drawCat(ctx, actor, cameraX) {
   ctx.restore();
 }
 
-function drawAlertIfNeeded(ctx, actor, cameraX) {
-  if (actor !== remoteCat) return;
-  if (!messageState.hasMessage) return;
-
-  const dw = FRAME_SIZE * SCALE;
-  const dx = Math.round(actor.x - cameraX + dw / 2);
-  const dy = Math.round(actor.y - 4);
-
-  ctx.save();
-  ctx.fillStyle = "#f9ed69";
-  ctx.strokeStyle = "#1f1d2b";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(dx, dy, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = "#1f1d2b";
-  ctx.font = "16px monospace";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("!", dx, dy + 1);
-  ctx.restore();
-}
-
 function advanceAnimation(actor, walking) {
   const next = walking ? "walk" : "idle";
 
@@ -206,7 +183,7 @@ function advanceAnimation(actor, walking) {
   }
 }
 
-// quick keyboard input (temporary)
+// keyboard input
 const keys = {};
-window.addEventListener("keydown", e => keys[e.key] = true);
-window.addEventListener("keyup", e => keys[e.key] = false);
+window.addEventListener("keydown", (e) => keys[e.key] = true);
+window.addEventListener("keyup", (e) => keys[e.key] = false);

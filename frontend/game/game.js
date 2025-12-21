@@ -6,16 +6,10 @@ import {
   spritesReady,
   SPRITE_SIZE,
   areCatsColliding,
-  initCharacters
+  initCharacters,
+  nudgeApart
 } from "./player.js";
-import {
-  initDialogue,
-  messageState,
-  openDialogue,
-  closeDialogue,
-  isDialogueOpen
-} from "./dialogue.js";
-import { initComposer } from "./composer.js";
+import { initDialogue, closeDialogue } from "./dialogue.js";
 
 const backgroundImage = new Image();
 backgroundImage.src = "/assets/backgrounds/background.jpg";
@@ -33,20 +27,11 @@ let cameraX = 0;
 let worldWidth = 600;
 const viewport = { width: 320, height: 180 };
 let hasPlacedPlayer = false;
-const BACKGROUND_PIXEL_SCALE = 0.25; // draw background at low res to match sprite feel
+const BACKGROUND_PIXEL_SCALE = 0.25; // lower-res buffer for a pixel-art feel
 let isPaused = false;
-const pauseReasons = new Set();
+let collisionLocked = false;
 
-export function setPauseState(reason, active) {
-  if (active) {
-    pauseReasons.add(reason);
-  } else {
-    pauseReasons.delete(reason);
-  }
-  isPaused = pauseReasons.size > 0;
-}
-
-export async function startGame() {
+export async function startGame({ onCollision } = {}) {
   initCharacters();
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
@@ -64,16 +49,19 @@ export async function startGame() {
   await Promise.all([spritesReady, backgroundReady]);
 
   initDialogue({
-    onOpen: () => { setPauseState("dialogue", true); },
-    onClose: () => { setPauseState("dialogue", false); }
+    onOpen: () => { isPaused = true; },
+    onClose: () => {
+      isPaused = false;
+      releaseCollision();
+    }
   });
-  initComposer({
-    onOpen: () => { setPauseState("composer", true); },
-    onClose: () => { setPauseState("composer", false); }
-  });
+
+  if (onCollision) collisionHandler = onCollision;
 
   requestAnimationFrame(loop);
 }
+
+let collisionHandler = () => {};
 
 function handleResize() {
   const dpr = window.devicePixelRatio || 1;
@@ -116,8 +104,9 @@ function positionCharacters() {
 
 function loop() {
   updateCharacters({ worldWidth, paused: isPaused });
-  if (!isPaused && messageState.hasMessage && areCatsColliding()) {
-    openDialogue();
+  if (!isPaused && !collisionLocked && areCatsColliding()) {
+    collisionLocked = true;
+    if (collisionHandler) collisionHandler();
   }
   updateCamera();
   drawBackground();
@@ -159,10 +148,12 @@ function drawBackground() {
 }
 
 function handleInteractionKey(e) {
-  if ((e.key === "Enter" || e.key === " ") && messageState.currentMessage && !isDialogueOpen()) {
-    openDialogue();
-  }
-  if (e.key === "Escape" && isDialogueOpen()) {
+  if (e.key === "Escape") {
     closeDialogue();
   }
+}
+
+function releaseCollision() {
+  nudgeApart(worldWidth);
+  collisionLocked = false;
 }

@@ -1,79 +1,39 @@
-import { startGame, setPauseState } from "./game/game.js";
-import { setMessage, messageState } from "./game/dialogue.js";
-import { initComposer, isComposerOpen, closeComposer } from "./game/composer.js";
-import { initIdentityOverlay, getRemoteUserId, getLocalUserId, getRole } from "./game/identity.js";
-import {
-  registerServiceWorker,
-  requestNotificationPermission,
-  getPublicVapidKey,
-  subscribeToPush,
-  registerSubscription,
-  fetchPending
-} from "./game/pushService.js";
+import { startGame } from "./game/game.js";
+import { initDialogue, showDialogue, closeDialogue } from "./game/dialogue.js";
 
-let overlayCount = 0;
-const composeBtn = document.getElementById("composer-open");
+const LOVE_MESSAGES = [
+  "I’m always with you ❤️",
+  "You’re stronger than you think",
+  "Even on hard days, you’re loved",
+  "You don’t have to rush, I’m here",
+  "You make the world softer just by being in it 🐱",
+  "Take a breath, I’m right beside you",
+  "You light up my world, Virginia",
+  "Let’s be cozy together today",
+  "Every step you take, I’m cheering for you",
+  "Your kindness makes everything brighter"
+];
 
-window.addEventListener("dialogue:open", () => handleOverlayChange(true));
-window.addEventListener("dialogue:close", () => handleOverlayChange(false));
-window.addEventListener("composer:open", () => handleOverlayChange(true));
-window.addEventListener("composer:close", () => handleOverlayChange(false));
+initDialogue({
+  onOpen: () => document.body.classList.add("overlay-open"),
+  onClose: () => document.body.classList.remove("overlay-open")
+});
 
-boot();
-
-async function boot() {
-  await initIdentityOverlay();
-  if (composeBtn) {
-    composeBtn.textContent = `Write to ${getRemoteUserId()} 💌`;
+startGame({
+  onCollision: () => {
+    const message = LOVE_MESSAGES[Math.floor(Math.random() * LOVE_MESSAGES.length)];
+    showDialogue(message);
   }
-  startGame();
+});
 
-  await setupPush();
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeDialogue();
+  }
+});
 
-  initComposer({
-    onOpen: () => {
-      setPauseState("composer", true);
-    },
-    onClose: () => {
-      setPauseState("composer", false);
-    }
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch((err) => {
+    console.error("Service worker registration failed", err);
   });
-
-  // Prevent composer from staying open if we ever trigger dialogue programmatically.
-  window.addEventListener("dialogue:open", () => {
-    if (isComposerOpen()) closeComposer();
-  });
-
-  // Dev helpers for manual testing in console.
-  window.gattiniMessageState = messageState;
-  window.gattiniSetMessage = setMessage;
-}
-
-async function setupPush() {
-  try {
-    const registration = await registerServiceWorker();
-    if (!registration) return;
-
-    const permission = await requestNotificationPermission();
-    if (permission !== "granted") return;
-
-    const publicKey = await getPublicVapidKey();
-    const subscription = await subscribeToPush(registration, publicKey);
-    if (!subscription) return;
-
-    const owner = getRole();
-    await registerSubscription(owner, subscription);
-    await fetchPending(owner); // warm up pending fetch; handle UI in future
-  } catch (err) {
-    console.error("Push setup failed", err);
-  }
-}
-
-function handleOverlayChange(opening) {
-  overlayCount += opening ? 1 : -1;
-  overlayCount = Math.max(0, overlayCount);
-  if (composeBtn) {
-    composeBtn.disabled = overlayCount > 0;
-  }
-  document.body.classList.toggle("overlay-open", overlayCount > 0);
 }
