@@ -1,0 +1,23 @@
+{
+  "name": "Gattini",
+  "short_name": "Gattini",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f1de",
+  "theme_color": "#f2a65a",
+  "description": "Pixel-art, cat-inspired adventure.",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/xcAAn8B9pXVjBcAAAAASUVORK5CYII=",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/xcAAn8B9pXVjBcAAAAASUVORK5CYII=",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

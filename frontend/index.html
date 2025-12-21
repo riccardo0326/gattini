@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <title>Gattini</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <button id="composer-open" class="composer-open" type="button">Write to Virginia 💌</button>
+
+  <div id="identity-overlay" class="identity-overlay" aria-hidden="false">
+    <div class="identity-modal" role="dialog" aria-modal="true">
+      <p class="identity-title">Chi sei??</p>
+      <div class="identity-actions">
+        <button id="choose-virginia" class="identity-btn">🐱 Virginia</button>
+        <button id="choose-riccardo" class="identity-btn">🐱 Riccardo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dialogue-overlay" class="dialogue-overlay" aria-hidden="true">
+    <div class="dialogue-modal" role="dialog" aria-modal="true">
+      <button id="dialogue-close" class="dialogue-close" type="button" aria-label="Close dialogue">X</button>
+      <div class="dialogue-avatar dialogue-avatar--local" aria-label="Local cat"></div>
+      <div class="dialogue-bubble">
+        <div id="dialogue-text" class="dialogue-text">...</div>
+      </div>
+      <div class="dialogue-avatar dialogue-avatar--remote" aria-label="Remote cat"></div>
+    </div>
+  </div>
+
+  <div id="composer-overlay" class="composer-overlay" aria-hidden="true">
+    <div class="composer-modal" role="dialog" aria-modal="true">
+      <button id="composer-close" class="dialogue-close" type="button" aria-label="Close composer">X</button>
+      <div class="dialogue-avatar dialogue-avatar--local" aria-label="Riccardo"></div>
+      <div class="composer-body">
+        <label class="composer-label" for="composer-text">Message to Virginia</label>
+        <textarea id="composer-text" class="composer-text" rows="3" maxlength="240" placeholder="Type your message..."></textarea>
+        <div class="composer-actions">
+          <button id="composer-send" type="button" class="composer-send">Send</button>
+          <button id="composer-cancel" type="button" class="composer-cancel">Cancel</button>
+        </div>
+      </div>
+      <div class="dialogue-avatar dialogue-avatar--remote" aria-label="Virginia"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
