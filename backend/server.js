@@ -6,7 +6,22 @@ const messageRoutes = require('./routes/message');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+const allowedOrigins = [
+  FRONTEND_ORIGIN,
+  /\.netlify\.app$/,
+  'http://localhost:5173',
+  'http://localhost:4173'
+];
+
+if (
+  origin &&
+  allowedOrigins.some(o =>
+    o instanceof RegExp ? o.test(origin) : o === origin
+  )
+) {
+  res.header('Access-Control-Allow-Origin', origin);
+}
+
 const DATA_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
 
 app.use(express.json());
@@ -33,7 +48,7 @@ app.use((req, res, next) => {
 
 // TODO static hosting: serve ../frontend build output when ready
 
-app.use('/', messageRoutes);
+app.use('/api', messageRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
