@@ -2,7 +2,7 @@ const path = require('path');
 require('dotenv').config();
 const express = require('express');
 
-const messageRoutes = require('./routes/message');
+// const messageRoutes = require('./routes/message');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
