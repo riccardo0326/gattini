@@ -72,14 +72,31 @@ export function updateCharacters({ worldWidth, paused = false }) {
 }
 
 export function drawCharacters(ctx, cameraX = 0) {
-  characters.forEach((actor) => {
+  characters.forEach((actor, idx) => {
     drawCat(ctx, actor, cameraX);
+    drawNameTag(ctx, actor, cameraX, idx === 0 ? "Virginia" : "Riccardo");
+    if (idx === 1) {
+      drawExclamation(ctx, actor, cameraX);
+    }
   });
 }
 
 export function nudgeApart(worldWidth) {
   player.x = Math.max(0, player.x - 12);
   remoteCat.x = Math.min(worldWidth - SPRITE_SIZE, remoteCat.x + 12);
+}
+
+export function setMoveDirection(dir) {
+  if (dir === 'left') {
+    keys['ArrowLeft'] = true;
+    keys['ArrowRight'] = false;
+  } else if (dir === 'right') {
+    keys['ArrowRight'] = true;
+    keys['ArrowLeft'] = false;
+  } else {
+    keys['ArrowLeft'] = false;
+    keys['ArrowRight'] = false;
+  }
 }
 
 function updatePlayerControlled(actor, worldWidth) {
@@ -113,7 +130,7 @@ function resolveOverlap(a, b, worldWidth) {
   const bRight = b.x + SPRITE_SIZE - pad;
 
   const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
-  lastCollision = overlapX > 4; // soften sensitivity
+  lastCollision = overlapX > 6; // soften sensitivity
   if (overlapX > 0) {
     if (a.x < b.x) {
       a.x -= overlapX;
@@ -162,6 +179,50 @@ function drawCat(ctx, actor, cameraX) {
       dw, dh
     );
   }
+  ctx.restore();
+}
+
+function drawNameTag(ctx, actor, cameraX, label) {
+  const dw = FRAME_SIZE * SCALE;
+  const dx = Math.round(actor.x - cameraX + dw / 2);
+  const dy = Math.round(actor.y - 12);
+  ctx.save();
+  ctx.fillStyle = "rgba(0,0,0,0.6)";
+  ctx.strokeStyle = "#ffffffaa";
+  ctx.lineWidth = 1;
+  ctx.font = "12px 'Courier New', monospace";
+  const textWidth = ctx.measureText(label).width;
+  const pad = 6;
+  ctx.fillRect(dx - textWidth / 2 - pad, dy - 14, textWidth + pad * 2, 16);
+  ctx.strokeRect(dx - textWidth / 2 - pad, dy - 14, textWidth + pad * 2, 16);
+  ctx.fillStyle = "#f8fafc";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, dx, dy - 6);
+  ctx.restore();
+}
+
+function drawExclamation(ctx, actor, cameraX) {
+  const t = performance.now() / 200;
+  const bob = Math.sin(t) * 2;
+  const dw = FRAME_SIZE * SCALE;
+  const dx = Math.round(actor.x - cameraX + dw / 2);
+  const dy = Math.round(actor.y - 20 + bob);
+
+  ctx.save();
+  ctx.fillStyle = "#f9ed69";
+  ctx.strokeStyle = "#1f1d2b";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(dx, dy, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#1f1d2b";
+  ctx.font = "16px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("!", dx, dy + 1);
   ctx.restore();
 }
 

@@ -29,9 +29,9 @@ const viewport = { width: 320, height: 180 };
 let hasPlacedPlayer = false;
 const BACKGROUND_PIXEL_SCALE = 0.25; // lower-res buffer for a pixel-art feel
 let isPaused = false;
-let collisionLocked = false;
+let proximityHandler = null;
 
-export async function startGame({ onCollision } = {}) {
+export async function startGame({ onProximity } = {}) {
   initCharacters();
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
@@ -56,12 +56,10 @@ export async function startGame({ onCollision } = {}) {
     }
   });
 
-  if (onCollision) collisionHandler = onCollision;
+  proximityHandler = onProximity || null;
 
   requestAnimationFrame(loop);
 }
-
-let collisionHandler = () => {};
 
 function handleResize() {
   const dpr = window.devicePixelRatio || 1;
@@ -104,9 +102,8 @@ function positionCharacters() {
 
 function loop() {
   updateCharacters({ worldWidth, paused: isPaused });
-  if (!isPaused && !collisionLocked && areCatsColliding()) {
-    collisionLocked = true;
-    if (collisionHandler) collisionHandler();
+  if (proximityHandler) {
+    proximityHandler(areCatsColliding());
   }
   updateCamera();
   drawBackground();
@@ -155,5 +152,4 @@ function handleInteractionKey(e) {
 
 function releaseCollision() {
   nudgeApart(worldWidth);
-  collisionLocked = false;
 }
