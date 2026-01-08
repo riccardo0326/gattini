@@ -1,6 +1,7 @@
 # Gattini (static PWA)
 
-Cozy pixel-art PWA made for Virginia. Runs fully offline after first load; no backend or messaging.
+Cozy pixel-art PWA made for Virginia. Runs fully offline after first load; no backend or messaging. 
+Fully customizable, made for Christmas gift to my gf.
 
 ## Run locally
 - From `frontend/`, serve statically (e.g., `python3 -m http.server 4173`).
